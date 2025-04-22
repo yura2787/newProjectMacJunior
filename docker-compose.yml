@@ -25,6 +25,11 @@ services:
     networks:
       - main_network
 
+  backend_api:
+    build:
+      dockerfile: Dockerfile
+      context: ./backend_api
+
 networks:
   main_network:
     driver: bridge
