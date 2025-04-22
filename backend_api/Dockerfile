@@ -9,3 +9,8 @@ RUN pip install --upgrade pip \
     && poetry config virtualenvs.create false
 
 COPY pyproject.toml poetry.lock /app/
+RUN poetry install --no-ansi --no-root --no-interaction
+
+COPY /app /app
+
+EXPOSE 9999
