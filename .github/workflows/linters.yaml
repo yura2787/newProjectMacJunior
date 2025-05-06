@@ -37,7 +37,6 @@ jobs:
           fi
           poetry install
           poetry add black
-          poetry add isort
           poetry add flake8
       #----------------------------------------------
       #              run test suite

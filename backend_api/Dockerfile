@@ -9,6 +9,9 @@ ENV PYTHONFAULTHANDLER=1 \
     POETRY_NO_INTERACTION=1 \
     PIP_NO_CACHE_DIR=1
 
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends make
+
 RUN pip install --upgrade pip \
     && pip install --no-cache-dir poetry \
     && poetry config virtualenvs.create false
