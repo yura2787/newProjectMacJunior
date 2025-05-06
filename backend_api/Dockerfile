@@ -22,3 +22,4 @@ RUN poetry install --no-ansi --no-root --no-interaction
 COPY /app /app
 
 EXPOSE 25000
+
