@@ -1,10 +1,11 @@
 from fastapi import APIRouter, status
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from applications.users.schemas import BaseFields, RegisterUserFields
 
-user_router = APIRouter()
+router_users = APIRouter()
 
 
-@user_router.post("/create", status_code=status.HTTP_201_CREATED)
-async def create_user(new_user: RegisterUserFields) -> BaseFields:
+@router_users.post("/create", status_code=status.HTTP_201_CREATED)
+async def create_user(new_user: RegisterUserFields, session: AsyncSession) -> BaseFields:
     return new_user
