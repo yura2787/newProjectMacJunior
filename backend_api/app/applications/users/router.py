@@ -5,6 +5,9 @@ from applications.users.crud import create_user_in_db
 from applications.users.schemas import BaseFields, RegisterUserFields
 from database.session_dependenscise import get_async_session
 
+
+
+
 router_users = APIRouter()
 
 
