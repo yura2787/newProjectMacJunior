@@ -1,5 +1,3 @@
-
-
 from fastapi import APIRouter, Request
 from fastapi.templating import Jinja2Templates
 
@@ -14,3 +12,9 @@ async def index(request: Request):
     response = templates.TemplateResponse('index.html', context=context)
     return response
 
+
+@router.get('/login')
+async def login(request: Request):
+    context = {'request': request, 'data': 123}
+    response = templates.TemplateResponse('index.html', context=context)
+    return response
