@@ -8,6 +8,7 @@ services:
       - "8100:8011"
     volumes:
       - ./documentation:/docs:ro
+
   local_database:
     image: postgres:16-alpine
     container_name: local_database
@@ -21,6 +22,7 @@ services:
       - postgres_datastorage:/var/lib/postgresgl/data
     networks:
       - main_network
+
   backend_api:
     build:
       dockerfile: Dockerfile
@@ -33,18 +35,38 @@ services:
     volumes:
       - ./backend_api/app:/app
     ports:
-      - "25000:25000"
+      - "9999:9999"
     command: |
       sh -c "
       alembic upgrade head && \
-      uvicorn main:app --port=25000 --host=0.0.0.0 --reload
+      uvicorn main:app --port=9999 --host=0.0.0.0 --reload
       "
     networks:
       - main_network
 
-  nginx_2:
+  frontend:
+    build:
+      dockerfile: Dockerfile
+      context: ./frontend
+    container_name: frontend
+    hostname: frontend
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - ./frontend/app:/app
+    ports:
+      - "12345:12345"
+    command: |
+      sh -c "
+      uvicorn main:app --port=12345 --host=0.0.0.0 --reload
+      "
+    networks:
+      - main_network
+
+  nginx_2_project1:
     image: nginx:alpine
-    container_name: nginx_2
+    container_name: nginx_2_project1
     restart: always
     ports:
       - "80:80"
@@ -53,10 +75,10 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
 
-
 networks:
   main_network:
     driver: bridge
+
 volumes:
   postgres_datastorage:
     external: false
