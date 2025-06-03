@@ -10,7 +10,6 @@ templates = Jinja2Templates(directory='templates')
 
 
 
-
 @router.get('/')
 async def index(request: Request, user: dict=Depends(get_current_user_with_token)):
     context = {'request': request}
@@ -20,12 +19,12 @@ async def index(request: Request, user: dict=Depends(get_current_user_with_token
     return response
 
 
-@router.get('/')
-async def index(request: Request):
-    context = {'request': request}
-    response = templates.TemplateResponse('index.html', context=context)
-    return response
 
+@router.get('/login')
+@router.post('/login')
+async def login(request: Request, user: dict=Depends(get_current_user_with_token), user_email: str = Form(''), password: str = Form('')):
+    context = {'request': request}
+    print(user, 55555555555555555555555)
 
 
 @router.get('/register')
