@@ -22,9 +22,39 @@ async def index(request: Request, user: dict=Depends(get_current_user_with_token
 
 @router.get('/login')
 @router.post('/login')
-async def login(request: Request, user: dict=Depends(get_current_user_with_token), user_email: str = Form(''), password: str = Form('')):
-    context = {'request': request}
-    print(user, 55555555555555555555555)
+async def login(request: Request, user: dict = Depends(get_current_user_with_token), user_email: str = Form(''),
+                password: str = Form('')):
+    context = {'request': request, "entered_email": user_email}
+    redirect_url = request.url_for("index")
+    if user.get('name'):
+        response = RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
+        return response
+
+
+    if request.method == "GET":
+        response = templates.TemplateResponse('login.html', context=context)
+        response.delete_cookie('access_token')
+        return response
+
+    user_tokens = await login_user(user_email, password)
+    access_token = user_tokens.get('access_token')
+    if not access_token:
+        errors = ["Incorrect login or password"]
+        context['errors'] = errors
+        return templates.TemplateResponse('login.html', context=context)
+    response = RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
+    response.set_cookie(key="access_token", value=access_token, httponly=True, max_age=60 * 5)
+    return response
+
+
+
+@router.get('/logout')
+async def logout(request: Request):
+    redirect_url = request.url_for("login")
+    response = RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
+    response.delete_cookie('access_token')
+    return response
+
 
 
 @router.get('/register')
@@ -48,29 +78,18 @@ async def register(
         return response
 
 
+
     created_user = await register_user(user_email=user_email, password=password, name=user_name)
-    if created_user['email']:
-        pass
+    if created_user.get('email'):
+        user_tokens = await login_user(user_email, password)
+        access_token = user_tokens.get('access_token')
 
-
-    user_tokens = await login_user(user_email, password)
-    access_token = user_tokens.get('access_token')
-
-    response = RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
-    response.set_cookie(key="access_token", value=access_token, httponly=True, max_age=60*5)
-    return response
+        response = RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
+        response.set_cookie(key="access_token", value=access_token, httponly=True, max_age=60*5)
+        return response
 
     context['errors'] = [created_user['detail']]
     response = templates.TemplateResponse('register.html', context=context)
-    return response
-
-
-
-@router.get('/logout')
-async def logout(request: Request):
-    redirect_url = request.url_for("login")
-    response = RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
-    response.delete_cookie('access_token')
     return response
 
 
