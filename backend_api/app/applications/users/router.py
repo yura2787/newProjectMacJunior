@@ -18,11 +18,11 @@ async def create_user(request: Request, new_user: RegisterUserFields, session: A
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail='Already exists')
 
     created_user = await create_user_in_db(new_user.email, new_user.name, new_user.password, session)
-    await rabbitmq_broker.send_message(
-        message={"name": created_user.name, "email": created_user.email,
-                 'redirect_url': str(request.url_for('verify_user', user_uuid=created_user.uuid_data))
-                 },
-        queue_name=SupportedQueues.USER_REGISTRATION)
+    # await rabbitmq_broker.send_message(
+    #     message={"name": created_user.name, "email": created_user.email,
+    #              'redirect_url': str(request.url_for('verify_user', user_uuid=created_user.uuid_data))
+    #              },
+    #     queue_name=SupportedQueues.USER_REGISTRATION)
 
     return created_user
 
