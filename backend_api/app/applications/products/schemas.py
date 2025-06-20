@@ -1,8 +1,9 @@
-# from pydantic import BaseModel
-#
-# class ProductSchema(BaseModel):
-#     title
-#     description
-#     price
-#     main_image
-#     images
+from pydantic import BaseModel
+
+class ProductSchema(BaseModel):
+    id: int
+    title: str
+    description: str
+    price: float
+    main_image: str
+    images: list[str]
