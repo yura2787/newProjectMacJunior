@@ -1,9 +1,11 @@
 from fastapi import APIRouter, Request, Form, Depends, status
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse
+from backend_api.api import get_current_user_with_token, login_user, register_user, get_products
 
-from backend_api.api import get_current_user_with_token, login_user, register_user
+
 router = APIRouter()
+
 
 templates = Jinja2Templates(directory='templates')
 
@@ -11,8 +13,15 @@ templates = Jinja2Templates(directory='templates')
 
 
 @router.get('/')
-async def index(request: Request, user: dict=Depends(get_current_user_with_token)):
-    context = {'request': request}
+async def index(request: Request, user: dict = Depends(get_current_user_with_token)):
+    products = await get_products()
+
+
+
+
+
+    context = {'request': request, "products": products}
+    print(products, 555555555555555555)
     if user.get('name'):
         context['user'] = user
     response = templates.TemplateResponse('index.html', context=context)
