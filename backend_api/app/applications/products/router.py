@@ -15,6 +15,10 @@ from database.session_dependenscise import get_async_session
 products_router = APIRouter()
 
 
+@products_router.post('/',
+                      # dependencies=[Depends(admin_required)]
+                      )
+
 @products_router.post('/', dependencies=[Depends(admin_required)])
 async def create_product(
         main_image: UploadFile,
