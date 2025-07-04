@@ -22,7 +22,11 @@ async def get_current_cart(
     session: AsyncSession = Depends(get_async_session),
 )  -> CartSchema:
     cart = await get_or_create_cart(user_id=user.id, session=session)
-    return cart
+    # print(cart.cart_products[0].product.__dict__)
+
+    response = CartSchema.from_orm(cart)
+    response = response.filter_zero_quantity_products()
+    return response
 
 @cart_router.patch("/change-products")
 async def change_products(
